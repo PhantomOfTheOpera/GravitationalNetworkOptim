@@ -1,0 +1,12 @@
+clustering_methods/**
+graph_elevation/**
+old_not_used_code/**
+venv/**
+mds.zip
+test_help_2.py
+utils_/plot_bar.py
+utils_/gif_generator.py
+compare_with_optimal.py
+gen_plot_tree.py
+utils_/__pycache__/**
+__pycache__/**
