@@ -14,11 +14,16 @@ def construct_gravitaional_potential(A: np.array, flw : list):
     """_summary_
 
     Args:
-        A (np.array): _description_
-        flw (list): _description_
+        A (np.array): adjacency matrix of the graph, weighted in general
+        flw (list): list of servers locations, indices of the nodes (with regard to adjacency matrix indices)
 
     Returns:
-        _type_: _description_
+        A, phi, blocks_length, blocks_indexes
+
+        A(np.array) : adjacency matrix 
+        phi(np.array) : gravitational potential
+        blocks_length(list) : list of matrix blocks length (in case of connected graph equal to adjacency matrix size)
+        blocks_indexes(np.array) : indexes of matrix blocks
     """
     
     w, v, disc_comp = counts_disconnected_components(A, flw)
@@ -44,28 +49,30 @@ def construct_gravitaional_potential(A: np.array, flw : list):
     for i in range(disc_comp):
         
         current_block_indeces = np.where(blocks_indexes == i)[0]
-        # print(current_block_indeces)
+
         block_matrix = L[current_block_indeces, :][:, current_block_indeces]
-        # print(block_matrix)
+
         w_block, v_block = LA.eigh(block_matrix)
         phi_ = np.abs(v_block[:, np.argmin(w_block[w_block > 0])])
         phi[current_block_indeces] = phi_
 
     for i in flows:
         phi = np.insert(phi, i, 0)
-    # print(phi)
+
     blocks_length = list((len(blocks_indexes[np.where(blocks_indexes == i)]) for i in range(disc_comp)))
+
     return A, phi, blocks_length, blocks_indexes
 
 def find_all_paths(A : np.array, current_vertex : int, phi : np.array, visited : list, path : list):
-    """_summary_
+    """
+    _summary_
 
     Args:
-        A (np.array): _description_
-        current_vertex (int): _description_
-        phi (np.array): _description_
-        visited (list): _description_
-        path (list): _description_
+        A (np.array): adjacency matrix 
+        current_vertex (int): initial vertex for calculating path
+        phi (np.array): gravitational potential
+        visited (list): list of already visited vertices
+        path (list): list of visited vertices, which construct the path
 
     """
     
@@ -81,7 +88,7 @@ def find_all_paths(A : np.array, current_vertex : int, phi : np.array, visited :
         # If current vertex is not destination
         # Recur for all the vertices adjacent to this vertex
     adj_vertices = np.nonzero(A[current_vertex])
-    # print(adj_vertices)
+
     try:
         phi_min_value = np.min(phi[adj_vertices])
         next_vertices = np.where(phi == phi_min_value)[0]
@@ -105,11 +112,20 @@ def find_all_paths(A : np.array, current_vertex : int, phi : np.array, visited :
 def optimization_step(A : np.array, phi : np.array, flow_vertices : list, search_size : int, non_flow_verices_number : int):
     """
     Args:
-        A (np.array): _description_
-        phi (np.array): _description_
+        A (np.array): adjacency matrix
+        phi (np.array): gravitational potential
+        flow_vertices(list) : list of servers locations (indices)
+        search_size(int) : maximum length of a path, (in order for recursion to work)
+        non_flow_verices_number(int) : total number of clients
+
+    Returns: flow_stats, metrics_value, business_metrics, cluster_inter_metrics, labels_list
+
+    flow_stats(dict) : Dictionary with servers statistcs (server : load_value)
+    metrics_value(float) : value of the criteria value (J = 1/2(J_1 + J_2))
+    business_metrics(float) : value of the load criteria (J_1)
+    cluster_inter_metrics(float) : value of the intersection criteria (J_@)
+    labels_list(list) : a list contatining labels for which server each client belongs to
     """
-    ###
-    # Для розрахування стокових вершин (станцій) для кожного клієнта
 
 
     vertex_stats = dict()
@@ -158,14 +174,26 @@ def optimization_step(A : np.array, phi : np.array, flow_vertices : list, search
     return flow_stats, metrics_value, business_metrics, cluster_inter_metrics, labels_list
 
 def one_step_permutation(graph : FlowGraph, rem_vert : list, j : int, visualization = False):
+    """_summary_
+
+    Args:
+        graph (FlowGraph): a FlowGraph object graph
+        rem_vert (list): list of current servers
+        j (int): number of iterarion step
+        visualization (bool, optional): _description_. Defaults to False.
+
+    Returns:
+        rem_vert, metrics
+
+        rem_vert(list): a list of server vertices for next iteration 
+        metrics(float): value of criteria (J)
+    """
 
     A, phi, labels, blocks_indexes = construct_gravitaional_potential(graph.adjacency_matrix, rem_vert)
-    ######
+
     value_ = labels.index(sorted(labels)[-1])
     value_indices = np.where(blocks_indexes == value_)
-    # print(np.where(phi[value_indices] == np.max(phi[value_indices]))[0])
-    ######
-    # max_vertices = np.where(phi == np.max(phi))[0]
+
     max_vertices = np.where(phi[value_indices] == np.max(phi[value_indices]))[0]
     new_max = max_vertices[0]
     non_flow_vertex_number = graph.vertex_number - len(rem_vert)
@@ -203,11 +231,15 @@ def one_step_permutation(graph : FlowGraph, rem_vert : list, j : int, visualizat
     
     return rem_vert, metrics
 
-def _cluster_intersection_(flow_distribution : dict, non_flow_verices_number : int, method = 'avg'):
+def _cluster_intersection_(flow_distribution : dict, non_flow_verices_number : int):
     """_summary_
 
     Args:
-        flow_distribution (dict): _description_
+        flow_distribution (dict): distribution of clients among servers
+        non_flow_verices_number (int): number of total clients
+
+    Returns:
+        intersection criteria (float)
     """
 
     pairs = list(combinations(flow_distribution.values(), 2))
@@ -219,22 +251,19 @@ def _cluster_intersection_(flow_distribution : dict, non_flow_verices_number : i
         intersections.append(joint_number)
         if joint_number > worst_case:
             worst_case = joint_number
-    if method == 'max':
-        return round(worst_case / non_flow_verices_number, 3)
-    # print((len(flow_distribution.values()) - 1) * (worst_case + 1))
     return round(np.sum((intersections - np.mean(intersections)) ** 2) ** 0.5 *(len(flow_distribution.values())) ** 0.5 / ((len(flow_distribution.values()) - 1) * (worst_case + 1))  , 3)
 
 def _avg_busyness_(vertex_statistics : dict, phi : np.array):
     """
 
     Args:
-        vertex_statistics (dict): _description_
-        phi (np.array): _description_
+        vertex_statistics (dict): distribution of clients among servers
+        phi (np.array): gravitational potential
     """
 
     flow_vert = np.where(phi == 0)[0]
 
-    flow_stats = {vert: 0 for vert in flow_vert}
+    flow_stats = {vert : 0 for vert in flow_vert}
     flow_distribution =  defaultdict(set)
 
     for key in vertex_statistics:
@@ -251,6 +280,12 @@ def _avg_busyness_(vertex_statistics : dict, phi : np.array):
 
 def check_loop(criterias_lst : list):
 
+    """_summary_
+
+    Checks if algorithm has looped
+    """
+
     if criterias_lst[-1] in criterias_lst[:-1]:
         return 1
+    
     return 0

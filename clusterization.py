@@ -5,7 +5,6 @@ from flow import one_step_permutation, check_loop
 from utils_.build_table import build_La_Tex_table
 
 
-
 if __name__ == "__main__":
 
     graph = graph_models.large_balanced_tree

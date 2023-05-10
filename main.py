@@ -73,7 +73,6 @@ def cluster_construction(graph: FlowGraph, A : np.array, k : int, num_iterations
 
     random.seed(2)
     rem_vert = random.sample(range(0,  A.shape[0]), k) 
-    rem_vert = [28, 29, 30, 31, 32, 33]
     _,criteria_ = one_step_permutation(graph, deepcopy(rem_vert), 0, visualization=False)
     print(f"Initial Server locations: {rem_vert}, Initial criterion: {criteria_}")
 
@@ -131,13 +130,12 @@ if __name__ == "__main__":
     from graph_models import unbalanced_3_2_1_tree, unbalanced_r_graph, random_powerlaw_tree, tutte_graph, chordal_cycle_graph, balanced_tree, weighted_balanced_tree, large_balanced_tree
 
     graph = unbalanced_3_2_1_tree
-    # for unbalanced_3_2_1_tree --- good start [28, 29, 30, 31, 32, 33]
 
     adjacency_matrix = graph.adjacency_matrix
-    # print(repr(adjacency_matrix))
     from utils_.detect_block_matrix import counts_disconnected_components
     print(counts_disconnected_components(adjacency_matrix, [])[-1])
     k = 3
+    
     final_servers = cluster_construction(graph, adjacency_matrix, k)
     groups = final_clusterisation(adjacency_matrix, final_servers)
     print(groups)

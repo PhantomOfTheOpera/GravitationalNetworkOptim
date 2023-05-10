@@ -1,6 +1,5 @@
 from tabulate import tabulate
 from texttable import Texttable
-
 import latextable
 
 def build_La_Tex_table(rows, caption = "A comparison of experiment results with different values of $k$"):
@@ -10,8 +9,6 @@ def build_La_Tex_table(rows, caption = "A comparison of experiment results with 
     table.set_deco(Texttable.HEADER | Texttable.VLINES)
     table.add_rows(rows)
 
-    # print('\nTexttable Table:')
-    # print(table.draw())
 
     print('\nTexttable Latex:')
     print(latextable.draw_latex(table, caption=caption))
