@@ -13,6 +13,9 @@ np.set_printoptions(threshold=sys.maxsize)
 
 def final_clusterisation(A : np.array, flw : list):
 
+    """
+    Performs final clusterization (distribution of clients among servers)
+    """
     A, phi, _, __ = construct_gravitaional_potential(A, flw)
 
     vertex_stats = dict()
@@ -35,11 +38,8 @@ def final_clusterisation(A : np.array, flw : list):
     return cluster_indices
 
 def find_cluster_center(A : np.array, ind : list):
-    """_summary_
-
-    Args:
-        A (np.array): _description_
-        inds (list): _description_
+    """
+    Finds optimal location of server in the cluster
     """
     if len(ind) == 1:
         return ind[0], set()
@@ -52,6 +52,10 @@ def find_cluster_center(A : np.array, ind : list):
     return (ind[real_center], set(ind) - {ind[real_center]}, avg_length)
 
 def optimize_server_location(A : np.array, groups_ind : list, compare = False):
+    """
+
+    Performs comparison between the actual optimal location of the servers and its mean path and one, returned by the algorithm 
+    """
     d_ = dict()
 
     for group in groups_ind:
@@ -70,7 +74,10 @@ def optimize_server_location(A : np.array, groups_ind : list, compare = False):
 
 def cluster_construction(graph: FlowGraph, A : np.array, k : int, num_iterations : int = 10):
         
+    """_summary_
 
+    Performs optimization and determines the optimal location of the servers before optimization of the paths
+    """
     random.seed(2)
     rem_vert = random.sample(range(0,  A.shape[0]), k) 
     _,criteria_ = one_step_permutation(graph, deepcopy(rem_vert), 0, visualization=False)
@@ -100,7 +107,9 @@ def cluster_construction(graph: FlowGraph, A : np.array, k : int, num_iterations
 
 
 def brute_force_optimization(graph, A : np.array, k : int):
-
+    """
+    Performs optimization by brute force method
+    """
     possible_comb = list(combinations(list(range(0,  A.shape[0])), k))
 
     current_comb = possible_comb[0]
