@@ -180,7 +180,9 @@ def one_step_permutation(graph : FlowGraph, rem_vert : list, j : int, visualizat
         graph (FlowGraph): a FlowGraph object graph
         rem_vert (list): list of current servers
         j (int): number of iterarion step
-        visualization (bool, optional): _description_. Defaults to False.
+        visualization (bool, optional): a parameter which defines if algorithm should plot the optimizations steps
+        Might be useful for some graphs, for good locations of nodes, pos parameter in FlowGraph should be defined manually.
+        Defaults to False.
 
     Returns:
         rem_vert, metrics

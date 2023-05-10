@@ -6,7 +6,14 @@ from itertools import product
 
 
 def counts_disconnected_components(A: np.array, flw : list):
-    
+    """_summary_
+
+    Args:
+        A (np.array): adjacency matrix
+        flw (list): list of servers locations
+
+    calculates the number of disconected components
+    """
     flows = sorted(flw)
 
     for iteration, index in enumerate(flows):

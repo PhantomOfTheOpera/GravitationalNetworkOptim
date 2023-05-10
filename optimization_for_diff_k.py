@@ -8,10 +8,10 @@ from utils_.build_table import build_La_Tex_table
 if __name__ == "__main__":
 
     graph = graph_models.large_balanced_tree
-    k = 14
+    k = 5
     table_lists = [['k', 'Random\_start', 'I_{avg}', 'Iteration\_number']]
     
-    for j in range(14, 30):
+    for j in range(3, k):
         current_stats = [j]
         num_iterations = 10
 

@@ -7,7 +7,16 @@ import matplotlib.pyplot as plt
 from utils_.dijkstra import find_all_paths
 
 def brute_path_optimization(A : np.array):
+    """_summary_
+    Brute force path optimization
+    Args:
+        A (np.array): Adjacency matrix
 
+    Returns:
+        current_path_avg, current_center
+        current_path_avg(float): paths mean value
+        current_center : vertex which minimizes the path sum
+    """
     vertices_num = np.shape(A)[0]
     current_path_avg = np.inf
     current_center = 0
@@ -22,11 +31,19 @@ def brute_path_optimization(A : np.array):
     return current_path_avg, current_center
 
 def optimize_paths(A : np.array, start_vertex = 0):
+    """_summary_
+
+    Args:
+        A (np.array): adjacency matrix
+        start_vertex (int, optional): Initial center location. Defaults to 0.
+
+    Returns:
+        optimal centroid vertex, value of mean paths
+    """
     
     current_start = start_vertex
 
     while True:
-        # print(current_start)
         lengths, paths = find_all_paths(wmat = A, start=current_start)
 
         total_start_length = np.sum(lengths)
@@ -37,7 +54,6 @@ def optimize_paths(A : np.array, start_vertex = 0):
         adj_vertex_minimum = start_vertex
 
         for vertex in adjacent_vertices:
-            # print(vertex)
 
             new_lengths = copy.deepcopy(lengths)
             for i in range(len(paths)):
@@ -58,8 +74,10 @@ def optimize_paths(A : np.array, start_vertex = 0):
     return current_start, np.mean(find_all_paths(wmat = A, start=current_start)[0])
 
 def find_closest_vertex(G : np.array):
+
     centroid =  np.mean(G, axis = 0)
     distances = np.sum((G - centroid)**2, axis=1)
+
     return np.argmin(distances)
 
 
@@ -164,76 +182,3 @@ def calculate_centroid_vertex(A: np.array, m = 2):
     ver = find_closest_vertex(X)
 
     return ver
-
-
-if __name__ == "__main__":
-
-    A = np.array([[0, 1, 0, 0, 0],
-                  [1, 0, 3, 0, 0],
-                  [0, 3, 0, 5, 0],
-                  [0, 0, 5, 0, 7],
-                  [0, 0, 0, 7, 0]], dtype=float)
-
-
-    A = np.array([[0, 0, 1, 0, 0, 0, 0],
-                [0, 0, 2, 0, 0, 0, 0],
-                [1, 2, 0, 10, 0, 0, 0],
-                [0, 0, 10, 0, 3, 4, 5],
-                [0, 0, 0, 3, 0, 0, 0],
-                [0, 0, 0, 4, 0, 0, 0],
-                [0, 0, 0, 5, 0, 0, 0],
-                ], dtype=float)
-
-    A = np.array([[0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-                [1, 0, 2, 30, 0, 0, 0, 40, 0, 0],
-                [0, 2, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 30, 0, 0, 3, 4, 5, 50, 0, 0],
-                [0, 0, 0, 3, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 4, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 5, 0, 0, 0, 0, 0, 0],
-                [0, 40, 0, 50, 0, 0, 0, 0, 3, 2],
-                [0, 0, 0, 0, 0, 0, 0, 3, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 2, 0, 0]], dtype=float)
-    
-    A = np.array([[0, 1, 1, 0, 12,0],
-                  [1, 0, 0, 0, 0, 5],
-                  [1, 0, 0, 5,0, 0],
-                  [0, 0, 5,0, 1, 0],
-                  [12,0, 0, 1, 0, 1],
-                  [0, 5,0, 0, 1, 0]], dtype=float)
-    
-
-    # A = np.array([[0, 0, 0, 0, 1, 0, 0, 10, 0, 0],
-    #               [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-    #               [0, 0, 0, 0, 0, 5, 2, 0, 0, 0],
-    #               [0, 0, 0, 0, 0, 0, 2, 0, 0, 0],
-    #               [1, 1, 0, 0, 0, 0, 0, 0, 15, 0],
-    #               [0, 0, 5, 0, 0, 0, 3, 0, 0, 8],
-    #               [0, 0, 2, 2, 0, 3, 0, 0, 0, 9],
-    #               [10, 0, 0, 0, 0, 0, 0, 0, 2, 0],
-    #               [0, 0, 0, 0, 15, 0, 0, 2, 0, 4],
-    #               [0, 0, 0, 0, 0, 8, 9, 0, 4, 0]], dtype=float)
-    
-    print(calculate_centroid_vertex(A))
-    A /= np.max(A)
-    
-    approx =  approximate_paths_lengths(A, m=2)
-    
-    
-    for i, j in zip(*np.where(approx == 0)):
-        if i != j:
-            approx[i][j] = np.max([np.max(approx[i, :]), np.max(approx[:, j])])
-
-    print(approx) 
-    B = _construct_inner_product_matrix_(approx)
-
-    X = calculate_embedding_matrix(B, m=2)
-
-    print(X)
-    ver = find_closest_vertex(X)
-    print(ver)
-    
-    graph = nx.from_numpy_matrix(A, parallel_edges=False, create_using=None)
-    nx.draw(graph, pos = X)
-    nx.draw_networkx_labels(graph, X, font_size = 20, font_family = "sans-serif")
-    plt.show()

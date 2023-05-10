@@ -114,10 +114,6 @@ def brute_force_optimization(graph, A : np.array, k : int):
         non_flow_vertex_number = graph.vertex_number - len(rem_vert)
 
         _, value, __, ___, ____ = optimization_step(A, phi, rem_vert, graph.vertex_number, non_flow_vertex_number)
-        
-        if value < 0.027:
-            print(value)
-            print(rem_vert)
 
         if value < current_value:
             current_value = value
@@ -127,18 +123,16 @@ def brute_force_optimization(graph, A : np.array, k : int):
 
 
 if __name__ == "__main__":
-    from graph_models import unbalanced_3_2_1_tree, unbalanced_r_graph, random_powerlaw_tree, tutte_graph, chordal_cycle_graph, balanced_tree, weighted_balanced_tree, large_balanced_tree
+    from graph_models import unbalanced_3_2_1_tree, random_powerlaw_tree, tutte_graph, chordal_cycle_graph, balanced_tree
 
-    graph = unbalanced_3_2_1_tree
+    graph = chordal_cycle_graph
 
     adjacency_matrix = graph.adjacency_matrix
     from utils_.detect_block_matrix import counts_disconnected_components
-    print(counts_disconnected_components(adjacency_matrix, [])[-1])
+    assert counts_disconnected_components(adjacency_matrix, [])[-1] == 1
     k = 3
-    
     final_servers = cluster_construction(graph, adjacency_matrix, k)
     groups = final_clusterisation(adjacency_matrix, final_servers)
-    print(groups)
     print(optimize_server_location(adjacency_matrix, groups, compare=True))
 
     # print(brute_force_optimization(graph, adjacency_matrix, k))
