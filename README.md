@@ -11,7 +11,7 @@ It consists of five main parts:
 
 ## How to use
 
-0. Instalд the required packages with `python install -r requirements.txt`
+0. Install the required packages with `python install -r requirements.txt`
 
 1. Create the desired graph model (instance of FlowGraph class, or select from already created in **graph_models.py**). 
 The graph can be created from the edgelist as well as from the adjacency matrix (parameters ***edgelist***, ***adj_matrix***).
