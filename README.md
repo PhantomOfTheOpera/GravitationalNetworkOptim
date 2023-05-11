@@ -24,4 +24,10 @@ The graph can be created from the edgelist as well as from the adjacency matrix 
 ### Module optimization_for_diff_k.py
 
 The output is a table generated in LaTex (just compile the output in the terminal as a LaTex file). The table looks like this:
+<p align="center">
+  <img src="./img/exp_example.png" alt="Example of output" width="650">
+</p>
+### main.py
+
+After defining the graph and setting the number of servers (`k`) the file generates output in format:
 
