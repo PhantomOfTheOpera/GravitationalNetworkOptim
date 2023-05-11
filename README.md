@@ -27,7 +27,15 @@ The output is a table generated in LaTex (just compile the output in the termina
 <p align="center">
   <img src="./img/exp_example.png" alt="Example of output" width="650">
 </p>
-### main.py
+
+### Module main.py
 
 After defining the graph and setting the number of servers (`k`) the file generates output in format:
+<p align="center">
+  <img src="./img/optimization_example.png" alt="Example of output" width="650">
+</p>
 
+As set to default, the module calculates the result of optimization algorithm. If needed to compare with actual optimal results, computed by brute-force method, please set `compare = True` in https://github.com/PhantomOfTheOpera/GravitationalNetworkOptim/blob/991c1ad4fd0fa279eab8e47f2ccf04d71b145e1c/main.py#L54
+This way, the output will include the optimal result for server center locations (second-step optimization). If the optimal results of first step optimization are also required, please uncomment the line https://github.com/PhantomOfTheOpera/GravitationalNetworkOptim/blob/991c1ad4fd0fa279eab8e47f2ccf04d71b145e1c/main.py#L150
+
+Please note that for large graphs and for k > 5 (approx.) the brute-force method has high complexit and thus it may a lot of time to compute, therefore by default such comparison is excluded.
